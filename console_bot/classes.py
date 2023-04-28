@@ -67,6 +67,9 @@ class Birthday(Field):
 
     def __str__(self):
         return self.value.strftime('%B %d')
+    
+class Email(Field):
+    pass
             
 class Record():
     '''Represent record with fields'''
