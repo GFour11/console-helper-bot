@@ -77,21 +77,22 @@ def remove_phone(name: str, number: str, *args, **kwargs) -> str:
     output = f'Number {number} is deleted from contact {name}'
     return output
 
-# @input_error
-# def days_to_birth(name: str, *args, **kwargs) -> str:
-#     '''Remove phone from contact phone numbers'''
-#     # record = address_book.data[name]
-#     name = int(name)
-#     days = record.days_to_birthday(name)
-#     output = f'To {name} birthday {days} days'
-#     return output
+@input_error
+def days_to_birth(name: str, *args, **kwargs) -> str:
+    '''Remove phone from contact phone numbers'''
+    record = address_book.data[name]
+    name = int(name)
+    days = record.days_to_birthday(name)
+    output = f'To {name} birthday {days} days'
+    return output
 
-
-def days_to_birth(number: int, *args, **kwargs) -> str:
+@input_error
+def upcoming_birth(number: int, *args, **kwargs) -> str:
+    '''Shows upcoming birthdays in selected period'''
     if not number:
         return "Select period in days"
     number = int(number)
-    upcoming = address_book.days_to_birthday(number)
+    upcoming = address_book.upcoming_birthdays(number)
     if len(upcoming) == 0:
         return "There will be no birthdays in the period you chose"
     return upcoming

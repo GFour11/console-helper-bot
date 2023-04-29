@@ -169,14 +169,14 @@ class Record():
         numbers = [str(phone) for phone in self.phones]
         return numbers
 
-    # def days_to_birthday(self):
-    #     '''Return number days to next birthday'''
-    #     today = date.today()
-    #     next_birthday = date(today.year, self.birthday.value.month, self.birthday.value.day)
-    #     if today > next_birthday:
-    #         next_birthday = date(today.year + 1, self.birthday.value.month, self.birthday.value.day)
-    #     days = (next_birthday - today).days
-    #     return days
+    def days_to_birthday(self):
+        '''Return number days to next birthday'''
+        today = date.today()
+        next_birthday = date(today.year, self.birthday.value.month, self.birthday.value.day)
+        if today > next_birthday:
+            next_birthday = date(today.year + 1, self.birthday.value.month, self.birthday.value.day)
+        days = (next_birthday - today).days
+        return days
 
 
 class AdressBook(UserDict):
@@ -221,7 +221,7 @@ class AdressBook(UserDict):
             yield output
             current += n
 
-    def days_to_birthday(self, days):
+    def upcoming_birthdays(self, days):
         today = datetime.today().date()
         res = ""
         for recs in self.data:
