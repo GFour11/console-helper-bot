@@ -202,6 +202,8 @@ class AdressBook(UserDict):
             str(record) for record in self.data.values()
             if symbols in record.name.value.lower()
             or symbols in ' '.join(record.get_numbers())
+            or symbols in record.adress.value.lower()
+            or symbols in record.email.value.lower()
         )
         return output
 
