@@ -75,6 +75,22 @@ class Birthday(Field):
     def __str__(self):
         return self.value.strftime('%B %d')
 
+class Address(Field):
+    def __init__(self, value) -> None:
+        self.__value = None
+        self.value = value
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        """Accept string wich format is 'City, street, house number, number of flat(optional)'"""
+        value = value.split(' ', '')
+        if len(value.split(',')) <= 4 and value.split(',')[0].isalpha() and value.split(',')[1].isalpha():
+            self.__value = value
+        else:
+            raise ValueError('Adress should be in format: city, street, house, flat')
 
 class Email(Field):
     pass
@@ -83,10 +99,11 @@ class Email(Field):
 class Record():
     '''Represent record with fields'''
 
-    def __init__(self, name, *phones, birthday=None):
+    def __init__(self, name, *phones,address, birthday=None):
         self.name = name
         self.phones = [phone for phone in filter(lambda phone: phone.value, phones)]
         self.birthday = birthday
+        self.address = address
 
     def __str__(self):
         output = f'name: {self.name.value}'
