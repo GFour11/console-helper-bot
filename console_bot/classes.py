@@ -1,6 +1,7 @@
 from collections import UserDict
 from functools import reduce
 from datetime import date
+import re
 
 class Field():
     '''Common field characters'''
@@ -46,10 +47,11 @@ class Phone(Field):
     
     @value.setter 
     def value(self, value: str):
-        if value.isdigit():
+        pattern = r"^(039|050|063|066|067|068|091|092|093|094|095|096|097|098|099)\d{7}$"
+        if re.match(pattern, value):
             self.__value = value
-        elif value:
-            raise ValueError(f'{value} it\'s not number')
+        else:
+            raise ValueError(f'Invalid phone number: {value} example number 0971111111')
 
 class Birthday(Field):
     def __init__(self, value) -> None:
@@ -69,7 +71,20 @@ class Birthday(Field):
         return self.value.strftime('%B %d')
     
 class Email(Field):
-    pass
+    '''Email characters'''
+    def __init__(self, value) -> None:
+        self.__value = None
+        self.value = value
+
+    @property
+    def value(self):
+        return self.__value
+    
+    @value.setter 
+    def value(self, value: str):
+        if not re.match(r"^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$", value):
+            raise ValueError(f'{value} is not a valid email address')
+        self.__value = value
             
 class Record():
     '''Represent record with fields'''
