@@ -20,7 +20,6 @@ def input_error(func):
         except KeyError as ke:
             output = f'There are no contact {str(ke)} in contacts'
         except ValueError as ve:
-            print('aa')
             output = str(ve).capitalize()
         except AttributeError:
             output = 'There no birthday date in this contact'
@@ -45,7 +44,7 @@ def adding(name: str, number: str, date: str, *args, **kwargs) -> str:
         date = Birthday(date)
     if record:
         record.add_phone(phone)
-        output = f'To contact {name.value} add new number: {phone.value}'
+        output = f'To contact {name} add new number: {phone}'
     else:
         record = Record(name, phone, birthday=date)
         address_book.add_record(record)
@@ -88,10 +87,11 @@ def days_to_birth(name: str, *args, **kwargs) -> str:
     return output
 
 @input_error
-def upcoming_birth(number: int, *args, **kwargs) -> str:
+def upcoming_birth(number: str, *args, **kwargs) -> str:
     '''Shows upcoming birthdays in selected period'''
+    number = 7
     if not number:
-        return "Select period in days"
+        return "You should select period in days"
     number = int(number)
     upcoming = address_book.upcoming_birthdays(number)
     if len(upcoming) == 0:

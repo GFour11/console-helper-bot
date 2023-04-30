@@ -1,5 +1,7 @@
 import re
+
 import handlers
+
 
 OPERATIONS = {
     'hello': handlers.hello,
@@ -19,6 +21,8 @@ OPERATIONS = {
 }
 
 COMMAND_WORDS = '|'.join(OPERATIONS)
+
+# add Dima phones: 0979155041 address: 'adhd ahdajsd ashdja a' birthday: 12.12.2000 email: 'cascasc'
 
 def parser(message: str) -> tuple[str|None, str|None, str|None]:
     '''
