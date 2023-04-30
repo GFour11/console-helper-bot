@@ -70,8 +70,7 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
-        if type(value) == date:
-            self.__value = value
+        self.__value = datetime.strptime(value, '%d.%m.%Y').date()
 
     def __str__(self):
         return self.value.strftime('%B %d')
@@ -85,10 +84,11 @@ class Address(Field):
         return self.__value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str):
         """Accept string with format is 'City, street, house number, number of flat(optional)'"""
-        value = value.split(' ', '')
-        if len(value.split(',')) <= 4 and value.split(',')[0].isalpha() and value.split(',')[1].isalpha():
+        value = value.replace(' ', '')
+        arr = value.split(',')
+        if len(arr) >= 2 and len(arr) <= 4 and arr[0].isalpha() and arr[1].isalpha():
             self.__value = value
         else:
             raise ValueError('Adress should be in format: city, street, house, flat')
@@ -115,7 +115,7 @@ class Record():
 
     def __init__(self, name, *phones, birthday:Birthday=None, address:Address=None, email:Email=None):
         self.name = name
-        self.phones = [phone for phone in filter(lambda phone: phone.value, phones)]
+        self.phones = [phone for phone in filter(lambda phone: phone, phones)]
         self.birthday = birthday
         self.address = address
         self.email = email
