@@ -11,6 +11,7 @@ OPERATIONS = {
     'remove contact': handlers.remove_contact,
     'remove phone': handlers.remove_phone,
     'days to birth': handlers.days_to_birth,
+    'upcoming birthdays': handlers.upcoming_birth,
     'find': handlers.find_rec,
     'close': handlers.good_bye,
     'good bye': handlers.good_bye,

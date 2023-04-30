@@ -1,25 +1,28 @@
 from collections import UserDict
 from functools import reduce
-from datetime import date
+from datetime import date, datetime
 import re
 
 class Field():
     '''Common field characters'''
+
     def __init__(self, value) -> None:
         self.value = value
         pass
 
     def __eq__(self, __obj: object) -> bool:
         return self.value == __obj.value and type(self) == type(__obj)
-    
+
     def __str__(self) -> str:
         return str(self.value)
-    
+
     def __repr__(self) -> str:
         return str(self)
 
+
 class Name(Field):
     '''Name characters'''
+
     def __init__(self, value) -> None:
         self.__value = None
         self.value = value
@@ -27,7 +30,7 @@ class Name(Field):
     @property
     def value(self):
         return self.__value
-    
+
     @value.setter
     def value(self, value):
         if value:
@@ -35,8 +38,10 @@ class Name(Field):
         else:
             raise ValueError('Cant save contact with empty name')
 
+
 class Phone(Field):
     '''Phone characters'''
+
     def __init__(self, value) -> None:
         self.__value = None
         self.value = value
@@ -44,8 +49,8 @@ class Phone(Field):
     @property
     def value(self):
         return self.__value
-    
-    @value.setter 
+
+    @value.setter
     def value(self, value: str):
         pattern = r"^(039|050|063|066|067|068|091|092|093|094|095|096|097|098|099)\d{7}$"
         if re.match(pattern, value):
@@ -53,15 +58,16 @@ class Phone(Field):
         else:
             raise ValueError(f'Invalid phone number: {value} example number 0971111111')
 
+
 class Birthday(Field):
     def __init__(self, value) -> None:
         self.__value = None
         self.value = value
-    
+
     @property
     def value(self):
         return self.__value
-    
+
     @value.setter
     def value(self, value):
         if type(value) == date:
@@ -69,8 +75,26 @@ class Birthday(Field):
 
     def __str__(self):
         return self.value.strftime('%B %d')
-    
+
+class Address(Field):
+    def __init__(self, value) -> None:
+        self.__value = None
+        self.value = value
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        """Accept string wich format is 'City, street, house number, number of flat(optional)'"""
+        value = value.split(' ', '')
+        if len(value.split(',')) <= 4 and value.split(',')[0].isalpha() and value.split(',')[1].isalpha():
+            self.__value = value
+        else:
+            raise ValueError('Adress should be in format: city, street, house, flat')
+
 class Email(Field):
+
     '''Email characters'''
     def __init__(self, value) -> None:
         self.__value = None
@@ -85,22 +109,24 @@ class Email(Field):
         if not re.match(r"^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$", value):
             raise ValueError(f'{value} is not a valid email address')
         self.__value = value
-            
+          
 class Record():
     '''Represent record with fields'''
-    def __init__(self, name, *phones, birthday=None):
-        self.name = name         
+
+    def __init__(self, name, *phones,address, birthday=None):
+        self.name = name
         self.phones = [phone for phone in filter(lambda phone: phone.value, phones)]
         self.birthday = birthday
+        self.address = address
 
     def __str__(self):
         output = f'name: {self.name.value}'
 
         phones = self.phones
-        if phones: 
+        if phones:
             numbers = ', '.join(self.get_numbers())
             output += f' numbers: {numbers}'
-        
+
         if self.birthday:
             birthday = str(self.birthday)
             output += f' birthday: {birthday}'
@@ -109,34 +135,40 @@ class Record():
 
     def raise_nonumber(func):
         '''
-        Decorator to raise exeption if there are no phone 
+        Decorator to raise exeption if there are no phone
         with such number in the phones
         '''
+
         def inner(self, phone, *args, **kwargs):
             if phone not in self.phones:
                 raise ValueError('There are no phone with such number in the phones')
             return func(self, phone, *args, **kwargs)
+
         return inner
-    
+
     def raise_same_number(func):
         '''
-        Decorator to raise exeption if already there is phone 
+        Decorator to raise exeption if already there is phone
         with such number in the phones
         '''
+
         def inner(self, *args, **kwargs):
             phone = args[-1]
             if phone in self.phones:
                 raise ValueError('Already there is phone with such number in the phones')
             return func(self, *args, **kwargs)
+
         return inner
-    
+
     def raise_empty_number(func):
         '''Decorator to raise exeption if phone has empty number'''
+
         def inner(self, *args, **kwargs):
             for phone in args:
                 if not phone.value:
                     raise ValueError('There no number in the command')
             return func(self, *args, **kwargs)
+
         return inner
 
     @raise_empty_number
@@ -153,7 +185,7 @@ class Record():
         for s_phone in filter(lambda s_phone: s_phone.value == phone.value, self.phones):
             self.phones.remove(s_phone)
         return self.phones
-    
+
     @raise_empty_number
     @raise_nonumber
     @raise_same_number
@@ -162,20 +194,21 @@ class Record():
         for phone in filter(lambda phone: phone == old_phone, self.phones):
             phone.value = new_phone.value
         return self.phones
-    
+
     def get_numbers(self) -> list[str]:
         '''Return list with numbers'''
         numbers = [str(phone) for phone in self.phones]
         return numbers
-    
+
     def days_to_birthday(self):
         '''Return number days to next birthday'''
         today = date.today()
         next_birthday = date(today.year, self.birthday.value.month, self.birthday.value.day)
         if today > next_birthday:
-            next_birthday = date(today.year+1, self.birthday.value.month, self.birthday.value.day)
+            next_birthday = date(today.year + 1, self.birthday.value.month, self.birthday.value.day)
         days = (next_birthday - today).days
         return days
+
 
 class AdressBook(UserDict):
     '''Represent adress book with records'''
@@ -185,24 +218,26 @@ class AdressBook(UserDict):
         key = record.name.value
         self.data[key] = record
         return self.data
-    
+
     def show_records(self) -> str:
         '''Show all records in the adress book data'''
         if not self.data:
             return 'There are no contacts in list'
-        output = reduce(lambda s, t: str(s) + '\n' + str(t), 
+        output = reduce(lambda s, t: str(s) + '\n' + str(t),
                         self.data.values(), 'Yor contacts:')
         return output
-    
+
     def find_records(self, symbols: str) -> str:
         '''Find all records with such symbols'''
         output = '\n'.join(
-            str(record) for record in self.data.values() 
-            if symbols in record.name.value.lower() 
+            str(record) for record in self.data.values()
+            if symbols in record.name.value.lower()
             or symbols in ' '.join(record.get_numbers())
-            )
+            or symbols in record.adress.value.lower()
+            or symbols in record.email.value.lower()
+        )
         return output
-    
+
     def __iter__(self):
         return self.iterator()
 
@@ -212,13 +247,19 @@ class AdressBook(UserDict):
         while current < len(self.data):
             group_number = current // n + 1
             output = reduce(
-                lambda s, t: str(s) + '\n' + str(t), 
-                list(self.data.values())[current:current+n], 
+                lambda s, t: str(s) + '\n' + str(t),
+                list(self.data.values())[current:current + n],
                 f'{group_number} group:'
-                )
+            )
             yield output
             current += n
 
-
-
-
+    def upcoming_birthdays(self, days):
+        today = datetime.today().date()
+        res = ""
+        for recs in self.data:
+            birthday = datetime.strptime(recs[-10:], "%d/%m/%Y").replace(year=today.year).date()
+            difference = (birthday - today).days
+            if 0 <= difference <= days:
+                res += f"{recs} -> {difference} days left \n"
+        return res

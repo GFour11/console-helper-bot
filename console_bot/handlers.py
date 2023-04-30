@@ -23,9 +23,9 @@ def input_error(func):
             output = str(ve).capitalize()
         except AttributeError:
             output = 'There no birthday date in this contact'
-        except StopIteration: 
+        except StopIteration:
             output = 'There are no more contacts'
-        return output 
+        return output
     return inner
 
 def hello(*args, **kwargs) -> str:
@@ -45,7 +45,7 @@ def adding(name: str, number: str, date: str, *args, **kwargs) -> str:
     if record:
         record.add_phone(phone)
         output = f'To contact {name.value} add new number: {phone.value}'
-    else: 
+    else:
         record = Record(name, phone, birthday=date)
         address_book.add_record(record)
         output = f'Contact {record} is saved'
@@ -81,9 +81,21 @@ def remove_phone(name: str, number: str, *args, **kwargs) -> str:
 def days_to_birth(name: str, *args, **kwargs) -> str:
     '''Remove phone from contact phone numbers'''
     record = address_book.data[name]
-    days = record.days_to_birthday()
+    name = int(name)
+    days = record.days_to_birthday(name)
     output = f'To {name} birthday {days} days'
     return output
+
+@input_error
+def upcoming_birth(number: int, *args, **kwargs) -> str:
+    '''Shows upcoming birthdays in selected period'''
+    if not number:
+        return "Select period in days"
+    number = int(number)
+    upcoming = address_book.upcoming_birthdays(number)
+    if len(upcoming) == 0:
+        return "There will be no birthdays in the period you chose"
+    return upcoming
 
 @input_error
 def remove_contact(name: str, *args, **kwargs) -> str:
@@ -110,6 +122,3 @@ def good_bye(*args, **kwargs) -> str:
     with open(CONTACTS_FILE, 'wb') as file:
         pickle.dump(address_book, file)
     return output
-
-
-
