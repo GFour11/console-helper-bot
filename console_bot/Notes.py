@@ -29,13 +29,13 @@ class Notes(UserDict):
         if note_key in self.data:
             self.data[note_key].record = new_record
         else:
-            raise KeyError(f'No note found with key "{note_key}"')
+            return f'No note found with key "{note_key}"'
 
     def remove_note(self, note_key):
         if note_key in self.data:
             del self.data[note_key]
         else:
-            raise KeyError(f'No note found with key "{note_key}"')
+            return f'No note found with key "{note_key}"'
 
     def save_in_file(self):
         if os.path.isfile('notes.bin'):
@@ -85,13 +85,13 @@ def change(result):
     theme = result[1].split(' ')
     key = theme[0]
     note = " ".join(theme[1:])
-    notes.edit_note(key, note)
-    notes.save_in_file()
+    message = notes.edit_note(key, note)
+    return message
 
 def remove(result):
     key = result[1]
-    notes.remove_note(key)
-    notes.save_in_file()
+    message = notes.remove_note(key)
+    return message
 
 
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
@@ -143,7 +143,7 @@ def main():
         res = message_parser(text)
         if res:
             if res[0] in commands_dict:
-                commands_dict[res[0]](res)
+                print(commands_dict[res[0]](res))
         else:
             print("can't see a command")
 
