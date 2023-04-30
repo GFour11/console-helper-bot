@@ -25,6 +25,17 @@ class Notes(UserDict):
         self.data[' '.join(key)] = note_record
         return self.data
 
+    def edit_note(self, note_key, new_record):
+        if note_key in self.data:
+            self.data[note_key].record = new_record
+        else:
+            raise KeyError(f'No note found with key "{note_key}"')
+
+    def remove_note(self, note_key):
+        if note_key in self.data:
+            del self.data[note_key]
+        else:
+            raise KeyError(f'No note found with key "{note_key}"')
 
     def save_in_file(self):
         if os.path.isfile('notes.bin'):
@@ -70,8 +81,21 @@ def all(result):
         print(f'Theme:{k},\n {v.record}')
 
 
+def change(result):
+    theme = result[1].split(' ')
+    key = theme[0]
+    note = " ".join(theme[1:])
+    notes.edit_note(key, note)
+    notes.save_in_file()
+
+def remove(result):
+    key = result[1]
+    notes.remove_note(key)
+    notes.save_in_file()
+
+
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
-commands_dict ={'add': add, 'all': all}
+commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove}
 
 """Зміст парсера такий: якщо він знаходить в тексті інтпута слово, що є командою, він повертає список у якому йде[команда, текст нотатка,
  список хештегів якщо вони присунті(тобто список в списку)]. якщо комади немає поверне None """
