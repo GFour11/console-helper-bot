@@ -18,9 +18,6 @@ def organize_files():
     directory = input("Введіть шлях до папки >>> ")
     KNOWN_EXTENSIONS = []
     UNKNOWN_EXTENSIONS = []
-    
-    if not os.path.isdir(directory):
-        raise ValueError("It's not a folder")
         
     def normalize(name):
         name = name.translate(str.maketrans('абвгдеёжзийклмнопрстуфхіыэюя', 
@@ -71,4 +68,11 @@ def organize_files():
                         UNKNOWN_EXTENSIONS.append(ext)
         remove_empty_directories(directory)
     
+
+    if not os.path.isdir(directory):
+        raise ValueError("It's not a folder")
     sort_files(directory)
+    return 'Done'
+
+if __name__ == '__main__':
+    organize_files()
