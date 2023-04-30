@@ -18,12 +18,11 @@ OPERATIONS = {
     'close': handlers.good_bye,
     'good bye': handlers.good_bye,
     'exit':handlers.good_bye, 
+    'save': handlers.save,
     'no command': handlers.no_command
 }
 
 COMMAND_WORDS = '|'.join(OPERATIONS)
-
-# add Dima phones: 0979155041 address: 'adhd ahdajsd ashdja a' birthday: 12.12.2000 email: 'cascasc'
 
 def parser(message: str) -> tuple[str|None, str|None, str|None]:
     '''Parse message to command and data'''

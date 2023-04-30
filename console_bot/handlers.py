@@ -1,18 +1,11 @@
 from datetime import datetime
 import re
-import pickle
 from pathlib import Path
 
 from classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
 
-CONTACTS_FILE = Path('data.bin')
-if CONTACTS_FILE.exists():
-    with open(CONTACTS_FILE, 'rb') as file:
-        address_book = pickle.load(file)
-else:
-    address_book = AdressBook()
+address_book = AdressBook.load_data()
 iterator = iter(address_book)
-
 
 def input_error(func):
     '''Decorator that handles errors in the handlers'''
@@ -151,8 +144,13 @@ def find_rec(symbols, *args, **kwargs):
 def good_bye(*args, **kwargs) -> str:
     '''Return bot goodbye'''
     output = "Good bye"
-    with open(CONTACTS_FILE, 'wb') as file:
-        pickle.dump(address_book, file)
+    address_book.dump_file()
+    return output
+
+def save(*args, **kwargs) -> str:
+    '''Save data'''
+    output = "Changes are saved"
+    address_book.dump_file()
     return output
 
 def no_command(*args, **kwargs) -> str:

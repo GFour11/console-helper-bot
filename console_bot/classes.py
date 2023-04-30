@@ -2,6 +2,10 @@ from collections import UserDict
 from functools import reduce
 from datetime import date, datetime
 import re
+import pickle
+from pathlib import Path
+
+CONTACTS_FILE = Path('data.bin')
 
 class Field():
     '''Common field characters'''
@@ -276,9 +280,15 @@ class AdressBook(UserDict):
                     res += f"{rec} -> {difference} days left \n"
         return res
 
-        #     if rec.birthday()
-        #     birthday = datetime.strptime(recs[-10:], "%d/%m/%Y").replace(year=today.year).date()
-        #     difference = (birthday - today).days
-        #     if 0 <= difference <= days:
-        #         res += f"{recs} -> {difference} days left \n"
-        # return res
+    def dump_file(self):
+        with open(CONTACTS_FILE, 'wb') as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def load_data():
+        if CONTACTS_FILE.exists():
+            with open(CONTACTS_FILE, 'rb') as file:
+                address_book = pickle.load(file)
+        else:
+            address_book = AdressBook()
+        return address_book
