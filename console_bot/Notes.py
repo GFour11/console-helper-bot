@@ -42,6 +42,44 @@ class Notes(UserDict):
                 return pickle.load(fh)
         else:
             return Notes()
+'''Функція search_by_tag приймає на вхід тег (ключове слово) і повертає список усіх нотаток, які містять цей тег. 
+Вона шукає по всіх нотатках, перевіряючи наявність тега в атрибуті hashtags.'''
+# Юрец
+    def search_by_tag(self, tag):
+        result = []
+        for k, v in self.items():
+            if v.hashtags and tag in v.hashtags.value:
+                result.append((k, v.record))
+        return result
+
+    def sort_by_tag(self, tag):
+        result = []
+        for k, v in self.items():
+            if v.hashtags and tag in v.hashtags.value:
+                result.append((k, v.record))
+        return sorted(result, key=lambda x: x[1])
+    def search(result):
+    if len(result) == 2:
+        tag = result[1]
+        notes_list = notes.search_by_tag(tag)
+        if notes_list:
+            for note in notes_list:
+                print(f'Theme: {note[0]},\n{note[1]}')
+        else:
+            print(f'No notes found with tag "{tag}"')
+    elif len(result) == 3 and result[2] == '--sort':
+        tag = result[1]
+        sorted_notes = notes.sort_by_tag(tag)
+        if sorted_notes:
+            for note in sorted_notes:
+                print(f'Theme: {note[0]},\n{note[1]}')
+        else:
+            print(f'No notes found with tag "{tag}"')
+    else:
+        print('Invalid arguments for search command')
+# Юрец
+        
+        
 
 
 
