@@ -1,16 +1,11 @@
-from classes import Phone, Name, Birthday, Record, AdressBook
 from datetime import datetime
-import pickle
+import re
 from pathlib import Path
 
-CONTACTS_FILE = Path('data.bin')
-if CONTACTS_FILE.exists():
-    with open(CONTACTS_FILE, 'rb') as file:
-        address_book = pickle.load(file)
-else:
-    address_book = AdressBook()
-iterator = iter(address_book)
+from classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
 
+address_book = AdressBook.load_data()
+iterator = iter(address_book)
 
 def input_error(func):
     '''Decorator that handles errors in the handlers'''
@@ -21,8 +16,9 @@ def input_error(func):
             output = f'There are no contact {str(ke)} in contacts'
         except ValueError as ve:
             output = str(ve).capitalize()
-        except AttributeError:
-            output = 'There no birthday date in this contact'
+        # except AttributeError as sa:
+        #     print(sa)
+        #     output = 'There no birthday date in this contact'
         except StopIteration:
             output = 'There are no more contacts'
         return output
@@ -34,31 +30,59 @@ def hello(*args, **kwargs) -> str:
     return output
 
 @input_error
-def adding(name: str, number: str, date: str, *args, **kwargs) -> str:
+def adding(data: str, *args, **kwargs) -> str:
     '''If contact is existing add phone to it, else create contact'''
-    record = address_book.data.get(name)
-    phone = Phone(number)
-    name = Name(name)
-    if date:
-        date = datetime.strptime(date, '%d.%m.%Y').date()
-        date = Birthday(date)
+
+    def parse_data(data: str, element: str):
+        classes = {
+            'phone': Phone,
+            'email': Email,
+            'address': Address,
+            'birthday': Birthday
+        }
+        key_words = '|'.join(classes) + '|$'
+        match = re.search(rf'\b({element}\:.+)(?=\b({key_words})\b)', data, re.IGNORECASE)
+        if match:
+            full = match.group(1)
+            data = data.replace(full, '').strip()
+            class_ = classes.get(element)
+            value = class_(full.split(':')[1].strip())
+            return data, value
+        return data, None
+            
+    data, birthday = parse_data(data, 'birthday')
+    data, address = parse_data(data, 'address')
+    data, phone = parse_data(data, 'phone')
+    data, email = parse_data(data, 'email')
+    name = Name(data)
+    record: Record = address_book.data.get(name.value)
+
     if record:
-        record.add_phone(phone)
-        output = f'To contact {name.value} add new number: {phone.value}'
+        if birthday:
+            record.birthday = birthday
+        if address:
+            record.address = address
+        if email:
+            record.email = email
+        if phone:
+            record.add_phone(phone)
+        output = f'To contact {name} add new data'
     else:
-        record = Record(name, phone, birthday=date)
+        record = Record(name, phone, birthday=birthday, address=address, email=email)
         address_book.add_record(record)
         output = f'Contact {record} is saved'
     return output
 
 @input_error
-def changing(name: str, number: str, old_number: str, *args, **kwargs) -> str:
+def changing(data: str, *args, **kwargs) -> str:
     '''Change contact in the dictionary'''
+    words = data.split()
+    name = ' '.join(words[:-2])
     record = address_book.data[name]
-    new_phone = Phone(number)
-    old_phone = Phone(old_number)
+    new_phone = Phone(words[-1])
+    old_phone = Phone(words[-2])
     record.change(old_phone, new_phone)
-    output = f'Contact {name} is changed from {old_number} to {number}'
+    output = f'Contact {name} is changed from {old_phone} to {new_phone}'
     return output
 
 @input_error
@@ -69,28 +93,29 @@ def get_phones(name: str, *args, **kwargs) -> str:
     return numbers
 
 @input_error
-def remove_phone(name: str, number: str, *args, **kwargs) -> str:
+def remove_phone(data: str, *args, **kwargs) -> str:
     '''Remove phone from contact phone numbers'''
+    words = data.split()
+    name = ' '.join(words[:-1])
     record = address_book.data[name]
-    phone = Phone(number)
+    phone = Phone(words[-1])
     record.remove_phone(phone)
-    output = f'Number {number} is deleted from contact {name}'
+    output = f'Number {phone} is deleted from contact {name}'
     return output
 
 @input_error
 def days_to_birth(name: str, *args, **kwargs) -> str:
     '''Remove phone from contact phone numbers'''
-    record = address_book.data[name]
-    name = int(name)
-    days = record.days_to_birthday(name)
+    record:Record = address_book.data[name]
+    days = record.days_to_birthday()
     output = f'To {name} birthday {days} days'
     return output
 
 @input_error
-def upcoming_birth(number: int, *args, **kwargs) -> str:
+def upcoming_birth(number: str, *args, **kwargs) -> str:
     '''Shows upcoming birthdays in selected period'''
     if not number:
-        return "Select period in days"
+        return "You should select period in days"
     number = int(number)
     upcoming = address_book.upcoming_birthdays(number)
     if len(upcoming) == 0:
@@ -119,6 +144,16 @@ def find_rec(symbols, *args, **kwargs):
 def good_bye(*args, **kwargs) -> str:
     '''Return bot goodbye'''
     output = "Good bye"
-    with open(CONTACTS_FILE, 'wb') as file:
-        pickle.dump(address_book, file)
+    address_book.dump_file()
+    return output
+
+def save(*args, **kwargs) -> str:
+    '''Save data'''
+    output = "Changes are saved"
+    address_book.dump_file()
+    return output
+
+def no_command(*args, **kwargs) -> str:
+    '''Answe if there no command'''
+    output = 'There no command'
     return output

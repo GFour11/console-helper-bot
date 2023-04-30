@@ -2,6 +2,10 @@ from collections import UserDict
 from functools import reduce
 from datetime import date, datetime
 import re
+import pickle
+from pathlib import Path
+
+CONTACTS_FILE = Path('data.bin')
 
 class Field():
     '''Common field characters'''
@@ -70,8 +74,7 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
-        if type(value) == date:
-            self.__value = value
+        self.__value = datetime.strptime(value, '%d.%m.%Y').date()
 
     def __str__(self):
         return self.value.strftime('%B %d')
@@ -85,10 +88,11 @@ class Address(Field):
         return self.__value
 
     @value.setter
-    def value(self, value):
-        """Accept string wich format is 'City, street, house number, number of flat(optional)'"""
-        value = value.split(' ', '')
-        if len(value.split(',')) <= 4 and value.split(',')[0].isalpha() and value.split(',')[1].isalpha():
+    def value(self, value: str):
+        """Accept string with format is 'City, street, house number, number of flat(optional)'"""
+        value = value.replace(' ', '')
+        arr = value.split(',')
+        if len(arr) >= 2 and len(arr) <= 4 and arr[0].isalpha() and arr[1].isalpha():
             self.__value = value
         else:
             raise ValueError('Adress should be in format: city, street, house, flat')
@@ -113,11 +117,12 @@ class Email(Field):
 class Record():
     '''Represent record with fields'''
 
-    def __init__(self, name, *phones,address, birthday=None):
+    def __init__(self, name, *phones, birthday:Birthday=None, address:Address=None, email:Email=None):
         self.name = name
-        self.phones = [phone for phone in filter(lambda phone: phone.value, phones)]
+        self.phones = [phone for phone in filter(lambda phone: phone, phones)]
         self.birthday = birthday
         self.address = address
+        self.email = email
 
     def __str__(self):
         output = f'name: {self.name.value}'
@@ -128,8 +133,13 @@ class Record():
             output += f' numbers: {numbers}'
 
         if self.birthday:
-            birthday = str(self.birthday)
-            output += f' birthday: {birthday}'
+            output += f' birthday: {self.birthday}'
+
+        if self.address:
+            output += f' address: {self.address}'
+
+        if self.email:
+            output += f' email: {self.email}'
 
         return output
 
@@ -229,14 +239,18 @@ class AdressBook(UserDict):
 
     def find_records(self, symbols: str) -> str:
         '''Find all records with such symbols'''
+
         output = '\n'.join(
             str(record) for record in self.data.values()
             if symbols in record.name.value.lower()
             or symbols in ' '.join(record.get_numbers())
-            or symbols in record.adress.value.lower()
-            or symbols in record.email.value.lower()
+            or (record.birthday and symbols in str(record.birthday).lower())
+            or (record.address and symbols in str(record.address).lower())
+            or (record.email and symbols in str(record.email).lower())
         )
-        return output
+        if output:
+            return output
+        return 'No matches found'
 
     def __iter__(self):
         return self.iterator()
@@ -255,11 +269,26 @@ class AdressBook(UserDict):
             current += n
 
     def upcoming_birthdays(self, days):
-        today = datetime.today().date()
         res = ""
-        for recs in self.data:
-            birthday = datetime.strptime(recs[-10:], "%d/%m/%Y").replace(year=today.year).date()
-            difference = (birthday - today).days
-            if 0 <= difference <= days:
-                res += f"{recs} -> {difference} days left \n"
+        for rec in self.data.values():
+            try:
+                difference = rec.days_to_birthday()
+            except AttributeError:
+                continue
+            else:
+                if 0 <= difference <= days:
+                    res += f"{rec} -> {difference} days left \n"
         return res
+
+    def dump_file(self):
+        with open(CONTACTS_FILE, 'wb') as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def load_data():
+        if CONTACTS_FILE.exists():
+            with open(CONTACTS_FILE, 'rb') as file:
+                address_book = pickle.load(file)
+        else:
+            address_book = AdressBook()
+        return address_book
