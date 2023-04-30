@@ -20,6 +20,7 @@ def input_error(func):
         except KeyError as ke:
             output = f'There are no contact {str(ke)} in contacts'
         except ValueError as ve:
+            print('aa')
             output = str(ve).capitalize()
         except AttributeError:
             output = 'There no birthday date in this contact'
