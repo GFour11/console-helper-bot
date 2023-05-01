@@ -1,112 +1,125 @@
 import os
 import shutil
-import zipfile
-
-import console_bot.ab_work as ab
-from console_bot.handlers import input_error, no_command
-
-CATEGORIES = {
-    'images': ('JPEG', 'PNG', 'JPG', 'SVG'),
-    'videos': ('AVI', 'MP4', 'MOV', 'MKV'),
-    'documents': ('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
-    'music': ('MP3', 'OGG', 'WAV', 'AMR'),
-    'archives': ('ZIP', 'GZ', 'TAR')
-}
-
-@input_error
-def organize_files(directory, *args, **kwargs):
-
-    KNOWN_EXTENSIONS = []
-    UNKNOWN_EXTENSIONS = []
-        
-    def normalize(name):
-        name = name.translate(str.maketrans('абвгдеёжзийклмнопрстуфхіыэюя', 
-                                            'abvgdeejzijklmnoprstufhiyejya'))
-        name = ''.join(c if c.isalnum() else '_' for c in name)
-        return name
 
 
-    def move_file(src_path, dst_path, new_name=None):
-        if not os.path.exists(dst_path):
-            os.makedirs(dst_path)
-        if new_name:
-            new_path = os.path.join(dst_path, new_name)
-        else:
-            new_path = os.path.join(dst_path, os.path.basename(src_path))
-        os.rename(src_path, new_path)
+extensions={'Зображення':['jpeg', 'png', 'jpg', 'svg'],
+           "Відео":['avi', 'mp4', 'mov', 'mkv'],
+           "Документи":['doc', 'docx', 'txt', 'pdf', 'xlsx', 'pptx'],
+           "Музика":['mp3', 'ogg', 'wav', 'amr'],
+           "Архіви":['zip', 'gz', 'tar'],
+           "Невідомі розширення":[]}
 
 
-
-    def remove_empty_directories(directory):
-        for item in os.listdir(directory):
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                remove_empty_directories(item_path)
-                if not os.listdir(item_path):
-                    os.rmdir(item_path)
-
-
-    def extract_archive(archive_path, dst_path):
-        with zipfile.ZipFile(archive_path, 'r') as zip_ref:
-            zip_ref.extractall(dst_path)
+def create_dirs(path):
+        os.mkdir(path + '\\Зображення')
+        os.mkdir(path+ '\\Відео')
+        os.mkdir(path+'\\Документи')
+        os.mkdir(path+'\\Музика')
+        os.mkdir(path+'\\Архіви')
+        os.mkdir(path+'\\Невідомі розширення')
 
 
-    def sort_files(directory):
-        nonlocal KNOWN_EXTENSIONS, UNKNOWN_EXTENSIONS
-        for item in os.listdir(directory):
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                sort_files(item_path)
-                if not os.listdir(item_path):
-                    os.rmdir(item_path)
+def normalize(word):
+    result_name=''
+    dicti ={'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g', 'Д': 'D', 'д': 'd',
+ 'Е': 'E', 'е': 'e', 'Ё': 'E', 'ё': 'e', 'Ж': 'J', 'ж': 'j', 'З': 'Z', 'з': 'z', 'И': 'I', 'и': 'i', 'Й': 'J', 'й': 'j', 'К': 'K', 'к': 'k', 'Л': 'L',
+ 'л': 'l', 'М': 'M', 'м': 'm', 'Н': 'N', 'н': 'n', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p', 'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T',
+ 'т': 't', 'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'TS', 'ц': 'c', 'Ч': 'CH', 'ч': 'ch', 'Ш': 'SH', 'ш': 'sh',
+ 'Щ': 'SCH', 'щ': 'sch', 'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '', 'Э': 'E', 'э': 'e', 'Ю': 'YU',
+ 'ю': 'yu', 'Я': 'YA', 'я': 'ya', 'Є': 'JE', 'є': 'je', 'І': 'I', 'і': 'i', 'Ї': 'JI', 'ї': 'ji', 'Ґ': 'G', 'ґ': 'g'}
+    for i in word:
+        if i not in dicti.values():
+            if i in dicti.keys():
+                result_name+=dicti[i]
+            elif '0'<=i<='9':
+                result_name+=i
             else:
-                _, ext = os.path.splitext(item)
-                ext = ext[1:].upper()
-                KNOWN_EXTENSIONS.append(ext)
-                for category, extensions in CATEGORIES.items():
-                    if ext in extensions:
-                        category_path = os.path.join(directory, category)
-                        move_file(item_path, category_path)
-                        if ext == 'ZIP':
-                            extract_archive(os.path.join(category_path, item), category_path)
-                    else:
-                        UNKNOWN_EXTENSIONS.append(ext)
-        remove_empty_directories(directory)
-    
-    print(directory)
-    if not directory:
-        directory = input("You dont ente folder name, please write it>>> ")
-    if not os.path.isdir(directory):
-        raise ValueError("It's not a folder")
-    sort_files(directory)
-    return 'Done'
+                result_name+='_'
+        else:
+            result_name+=i
+    return result_name
 
-def start(*args, **kwargs):
-    return 'Here you can sort files'
 
-def main_menu(*args, **kwargs) -> str:
-    '''Return to the main menu'''
-    output = 'Return'
-    return output
+def get_subfolder_paths(path):
+    subfolder_paths = [f.path for f in os.scandir(path) if f.is_dir()]
+    return subfolder_paths
 
-SORT_COMMANDS = {
-    'sort': organize_files,
-    'return': main_menu,
-    'help': start
-}
+def get_file_paths(path):
+    file_paths = [f.path for f in os.scandir(path) if not f.is_dir()]
+    return file_paths
 
-SORT_COMMANDS_WORDS = '|'.join(SORT_COMMANDS)
+def sort_files(ls,path):
+    file_paths = ls
+    ext_list = list(extensions.items())
+    lst=[]
+    for file_path in file_paths:
+        lst.append(file_path)
+        extension = file_path.split('.')[-1]
+        file_name = file_path.split('\\')[-1]
+        normalize_name =file_name.split('.')
+        normal= normalize(normalize_name[0])
+        for dict_key_int in range(len(ext_list)):
+            if extension in ext_list[dict_key_int][1]:
+                os.rename(file_path, f'{path}\\{ext_list[dict_key_int][0]}\\{normal}.{extension}')
+                lst.remove(file_path)
+    for i in lst:
+        file_name=i.split('\\')[-1]
+        os.rename(i, f'{path}\\Невідомі розширення\\{file_name}')
 
-def main():
-    print(start())
-    while True:
-        user_input = input('Write your command: ')
-        command, data = ab.parser(user_input, SORT_COMMANDS_WORDS)
-        handler = SORT_COMMANDS.get(command, no_command)
-        output = handler(data)
-        print(output)
-        if output == 'Return':
-            break
 
-if __name__ == '__main__':
-    main()
+def get_subfolders(path):
+    subfolders = []
+    for item in os.listdir(path):
+        item_path = os.path.join(path, item)
+        if os.path.isdir(item_path):
+            subfolders.append(item_path)
+            subfolders.extend(get_subfolders(item_path))
+    return subfolders
+
+def full_sort(path):
+    m= get_subfolders(path)
+    for i in m:
+        new_path= i
+        sort =sort_files(get_file_paths(new_path),path)
+
+def dearchivator(path):
+    way = f'{path}\\Архіви'
+    j = get_file_paths(way)
+    for i in j:
+        name = i.split('\\')[-1]
+        name=name.split('.')
+        (os.mkdir(way + f'\\{normalize(name[0])}'))
+        shutil.unpack_archive(i,  f'{way}\\{normalize(name[0])}')
+        os.remove(i)
+
+def folder_remover(path):
+    list_with_folders = get_subfolders(path)
+    list_with_folders.reverse()
+    for i in list_with_folders:
+        name = i.split('\\')[-1]
+        if name not in extensions.keys():
+            if len(os.listdir(i))==0:
+                os.rmdir(i)
+
+def annotation_file(path):
+    message=''
+    for i in os.listdir(path):
+        name = i.split('\\')[-1]
+        message+=f'{name}:\n'
+        for k in os.listdir(f'{path}\\{i}'):
+                file_name = k.split('\\')[-1]
+                message += f'--{file_name}\n'
+    with open (f'{path}\\annotation.txt', 'x') as file:
+        file.write(message)
+
+path = sys.argv[1]                                                   
+if os.path.isdir(path):
+    create_new_dirs= create_dirs(path)                          
+    first_sort=sort_files(.get_file_paths(path), path)      
+    second_sort = full_sort(path)                               
+    archives_unpacker= dearchivator(path)                       
+    clean=folder_remover(path)                                  
+    result_file=annotation_file(path)                           
+    print('Ваші файли відсортовано')
+else:
+    print("Шлях до папки вказано не вірно")
