@@ -2,9 +2,9 @@ from datetime import datetime
 import re
 from pathlib import Path
 
-from classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
+from console_bot.classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
 
-address_book = AdressBook.load_data()
+address_book = AdressBook()
 iterator = iter(address_book)
 
 def input_error(func):
@@ -34,18 +34,18 @@ def adding(data: str, *args, **kwargs) -> str:
     '''If contact is existing add phone to it, else create contact'''
 
     def parse_data(data: str, element: str):
-        classes = {
+        name_classes = {
             'phone': Phone,
             'email': Email,
             'address': Address,
             'birthday': Birthday
         }
-        key_words = '|'.join(classes) + '|$'
+        key_words = '|'.join(name_classes) + '|$'
         match = re.search(rf'\b({element}\:.+)(?=\b({key_words})\b)', data, re.IGNORECASE)
         if match:
             full = match.group(1)
             data = data.replace(full, '').strip()
-            class_ = classes.get(element)
+            class_ = name_classes.get(element)
             value = class_(full.split(':')[1].strip())
             return data, value
         return data, None
