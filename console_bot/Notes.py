@@ -1,4 +1,5 @@
 from collections import UserDict
+from main import instruction
 import re
 import pickle
 import os
@@ -184,6 +185,7 @@ def message_parser(text):
 
 
 def main():
+    print(instruction('instruction for notes.txt'))
     while True:
         text = input('>>>')
         if text == 'exit':
