@@ -131,6 +131,15 @@ def remove(result):
     message = notes.remove_note(key)
     return message
 
+def find(result):
+    word= result[1]
+    result= []
+    for i in notes:
+        res = re.findall(word, notes[i].record)
+        if len(res) > 0:
+            result.append(f'Note :{notes[i].record}')
+        return '\n'.join(result)
+
 
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
 commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove}
