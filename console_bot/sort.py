@@ -1,6 +1,9 @@
 import os
 import shutil
 
+import console_bot.ab_work as ab
+from console_bot.handlers import no_command, input_error
+
 
 extensions={'Зображення':['jpeg', 'png', 'jpg', 'svg'],
            "Відео":['avi', 'mp4', 'mov', 'mkv'],
@@ -112,14 +115,51 @@ def annotation_file(path):
     with open (f'{path}\\annotation.txt', 'x') as file:
         file.write(message)
 
-path = sys.argv[1]                                                   
-if os.path.isdir(path):
-    create_new_dirs= create_dirs(path)                          
-    first_sort=sort_files(.get_file_paths(path), path)      
-    second_sort = full_sort(path)                               
-    archives_unpacker= dearchivator(path)                       
-    clean=folder_remover(path)                                  
-    result_file=annotation_file(path)                           
-    print('Ваші файли відсортовано')
-else:
-    print("Шлях до папки вказано не вірно")
+@input_error       
+def organize_files(path):
+    if not path:
+        raise ValueError('You should write path')
+                                           
+    if os.path.isdir(path):
+        create_new_dirs= create_dirs(path)                          
+        first_sort=sort_files(get_file_paths(path), path)      
+        second_sort = full_sort(path)                               
+        archives_unpacker= dearchivator(path)                       
+        clean=folder_remover(path)                                  
+        result_file=annotation_file(path)                           
+        print('Done')
+    else:
+        raise ValueError("Not correct path")
+
+def start(*args, **kwargs):
+    return 'Here you can sort files'
+
+def no_command(*args, **kwargs):
+    return 'There are no command like this'
+
+def main_menu(*args, **kwargs) -> str:
+    '''Return to the main menu'''
+    output = 'Return'
+    return output
+
+SORT_COMMANDS = {
+    'sort': organize_files,
+    'return': main_menu,
+    'help': start
+}
+
+SORT_COMMANDS_WORDS = '|'.join(SORT_COMMANDS)
+
+def main():
+    print(start())
+    while True:
+        user_input = input('Write your command: ')
+        command, data = ab.parser(user_input, SORT_COMMANDS_WORDS)
+        handler = SORT_COMMANDS.get(command, no_command)
+        output = handler(data)
+        print(output)
+        if output == 'Return':
+            break
+
+if __name__ == 'main':
+    main()
