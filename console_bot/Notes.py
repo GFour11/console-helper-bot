@@ -53,8 +53,8 @@ class Notes(UserDict):
                 return pickle.load(fh)
         else:
             return Notes()
-'''Функція search_by_tag приймає на вхід тег (ключове слово) і повертає список усіх нотаток, які містять цей тег. 
-Вона шукає по всіх нотатках, перевіряючи наявність тега в атрибуті hashtags.'''
+# '''Функція search_by_tag приймає на вхід тег (ключове слово) і повертає список усіх нотаток, які містять цей тег. 
+# Вона шукає по всіх нотатках, перевіряючи наявність тега в атрибуті hashtags.'''
 # Юрец
     def search_by_tag(self, tag):
         result = []
@@ -69,7 +69,7 @@ class Notes(UserDict):
             if v.hashtags and tag in v.hashtags.value:
                 result.append((k, v.record))
         return sorted(result, key=lambda x: x[1])
-    def search(result):
+def search(result):
     if len(result) == 2:
         tag = result[1]
         notes_list = notes.search_by_tag(tag)
