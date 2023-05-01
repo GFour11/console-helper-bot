@@ -10,6 +10,11 @@ def good_bye(*args, **kwargs):
 
 def no_command(*args, **kwargs):
     return 'There are no command'
+def instruction(path):
+    with open(path, 'r') as file:
+        result = file.readlines()
+        file.close()
+        return ''.join(result)
 
 MAIN_COMMANDS = {
     'help': help,
@@ -22,7 +27,7 @@ MAIN_COMMANDS = {
 MAIN_COMMANDS_WORDS = '|'.join(MAIN_COMMANDS)
 
 def main():
-    print(help())
+    print(instruction('instruction for menu.txt'))
     while True:
         user_input = input('Choose points: address book, notes, sort: ')
         command, _ = ab.parser(user_input, MAIN_COMMANDS_WORDS)

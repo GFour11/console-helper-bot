@@ -160,7 +160,7 @@ def main_menu(*args, **kwargs) -> str:
     return output
 
 def no_command(*args, **kwargs) -> str:
-    '''Answe if there no command'''
+    '''Answer if there no command'''
     output = 'There no command'
     return output
 
