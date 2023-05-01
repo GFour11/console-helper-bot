@@ -26,10 +26,15 @@ def organize_files(directory, *args, **kwargs):
         return name
 
 
-    def move_file(src_path, dst_path):
+    def move_file(src_path, dst_path, new_name=None):
         if not os.path.exists(dst_path):
             os.makedirs(dst_path)
-        shutil.move(src_path, dst_path)
+        if new_name:
+            new_path = os.path.join(dst_path, new_name)
+        else:
+            new_path = os.path.join(dst_path, os.path.basename(src_path))
+        os.rename(src_path, new_path)
+
 
 
     def remove_empty_directories(directory):
