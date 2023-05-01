@@ -194,5 +194,5 @@ def main():
         else:
             print("can't see a command")
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
