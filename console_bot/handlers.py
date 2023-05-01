@@ -16,9 +16,8 @@ def input_error(func):
             output = f'There are no contact {str(ke)} in contacts'
         except ValueError as ve:
             output = str(ve).capitalize()
-        # except AttributeError as sa:
-        #     print(sa)
-        #     output = 'There no birthday date in this contact'
+        except AttributeError:
+            output = 'There no birthday date in this contact'
         except StopIteration:
             output = 'There are no more contacts'
         return output
