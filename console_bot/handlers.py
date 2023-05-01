@@ -153,6 +153,12 @@ def save(*args, **kwargs) -> str:
     address_book.dump_file()
     return output
 
+def main_menu(*args, **kwargs) -> str:
+    '''Return to the main menu'''
+    output = 'Return'
+    address_book.dump_file()
+    return output
+
 def no_command(*args, **kwargs) -> str:
     '''Answe if there no command'''
     output = 'There no command'
