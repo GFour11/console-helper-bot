@@ -4,7 +4,7 @@ from pathlib import Path
 
 from console_bot.classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
 
-address_book = AdressBook()
+address_book = AdressBook.load_data()
 iterator = iter(address_book)
 
 def input_error(func):
@@ -163,3 +163,6 @@ def no_command(*args, **kwargs) -> str:
     '''Answe if there no command'''
     output = 'There no command'
     return output
+
+if __name__ == '__main__':
+    print(address_book)
