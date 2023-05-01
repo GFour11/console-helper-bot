@@ -1,6 +1,6 @@
 import re
 
-import handlers
+import console_bot.handlers as handlers
 
 
 OPERATIONS = {

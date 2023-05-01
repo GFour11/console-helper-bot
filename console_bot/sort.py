@@ -2,8 +2,8 @@ import os
 import shutil
 import zipfile
 
-import ab_work as ab
-from handlers import input_error, no_command
+import console_bot.ab_work as ab
+from console_bot.handlers import input_error, no_command
 
 CATEGORIES = {
     'images': ('JPEG', 'PNG', 'JPG', 'SVG'),

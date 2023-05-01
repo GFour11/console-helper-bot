@@ -9,5 +9,5 @@ setup(
     author_email='dmytro.babenko87@gmail.com',
     license='MIT',
     packages=find_namespace_packages(),
-    entry_points={'console_scripts': ['contact-bot = console_bot.__main__:main']}
+    entry_points={'console_scripts': ['contact-bot = console_bot.main:main']}
 )
