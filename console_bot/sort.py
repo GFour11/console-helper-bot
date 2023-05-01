@@ -1,8 +1,9 @@
 import os
 import shutil
 import zipfile
-from handlers import input_error
 
+import ab_work as ab
+from handlers import input_error, no_command
 
 CATEGORIES = {
     'images': ('JPEG', 'PNG', 'JPG', 'SVG'),
@@ -12,10 +13,9 @@ CATEGORIES = {
     'archives': ('ZIP', 'GZ', 'TAR')
 }
 
-
 @input_error
-def organize_files():
-    directory = input("Введіть шлях до папки >>> ")
+def organize_files(directory, *args, **kwargs):
+
     KNOWN_EXTENSIONS = []
     UNKNOWN_EXTENSIONS = []
         
@@ -68,11 +68,40 @@ def organize_files():
                         UNKNOWN_EXTENSIONS.append(ext)
         remove_empty_directories(directory)
     
-
+    print(directory)
+    if not directory:
+        directory = input("You dont ente folder name, please write it>>> ")
     if not os.path.isdir(directory):
         raise ValueError("It's not a folder")
     sort_files(directory)
     return 'Done'
 
+def start(*args, **kwargs):
+    return 'Here you can sort files'
+
+def main_menu(*args, **kwargs) -> str:
+    '''Return to the main menu'''
+    output = 'Return'
+    return output
+
+SORT_COMMANDS = {
+    'sort': organize_files,
+    'return': main_menu,
+    'help': start
+}
+
+SORT_COMMANDS_WORDS = '|'.join(SORT_COMMANDS)
+
+def main():
+    print(start())
+    while True:
+        user_input = input('Write your command: ')
+        command, data = ab.parser(user_input, SORT_COMMANDS_WORDS)
+        handler = SORT_COMMANDS.get(command, no_command)
+        output = handler(data)
+        print(output)
+        if output == 'Return':
+            break
+
 if __name__ == '__main__':
-    organize_files()
+    main()

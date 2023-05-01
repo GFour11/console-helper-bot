@@ -15,20 +15,23 @@ OPERATIONS = {
     'days to birth': handlers.days_to_birth,
     'upcoming birthdays': handlers.upcoming_birth,
     'find': handlers.find_rec,
-    'close': handlers.good_bye,
-    'good bye': handlers.good_bye,
-    'exit':handlers.good_bye, 
     'save': handlers.save,
-    'no command': handlers.no_command
+    'no command': handlers.no_command,
+    'main menu': handlers.main_menu,
+    'return': handlers.main_menu,
+
+    # 'close': handlers.good_bye,
+    # 'good bye': handlers.good_bye,
+    # 'exit':handlers.good_bye, 
+
 }
 
 COMMAND_WORDS = '|'.join(OPERATIONS)
 
-def parser(message: str) -> tuple[str|None, str|None, str|None]:
+def parser(message: str, commands: str) -> tuple[str|None, str|None, str|None]:
     '''Parse message to command and data'''
-
     message = message.lstrip()
-    command_match = re.search(fr'^({COMMAND_WORDS})\b', message, re.IGNORECASE)
+    command_match = re.search(fr'^({commands})\b', message, re.IGNORECASE)
     if command_match:
         command = command_match.group(1)
         data = re.sub(command, '', message).strip()
@@ -37,18 +40,17 @@ def parser(message: str) -> tuple[str|None, str|None, str|None]:
     return 'no command', ''
 
 def main():
-    address_book = handlers.address_book
     print(handlers.hello())
     while True:
         inp = input('Write your command: ')
-        command, data  = parser(inp)
+        command, data  = parser(inp, COMMAND_WORDS)
         print(data)
         handler = OPERATIONS.get(command, handlers.no_command)
         output = handler(data)
         print(output)
-        if output == 'Good bye':
+        if output == 'Return':
             break
-    return address_book
+    pass 
 
 if __name__ == '__main__':
     main()
