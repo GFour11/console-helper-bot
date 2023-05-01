@@ -28,12 +28,14 @@ class Notes(UserDict):
     def edit_note(self, note_key, new_record):
         if note_key in self.data:
             self.data[note_key].record = new_record
+            return f'Note changed'
         else:
             return f'No note found with key "{note_key}"'
 
     def remove_note(self, note_key):
         if note_key in self.data:
             del self.data[note_key]
+            return f'Note deleted'
         else:
             return f'No note found with key "{note_key}"'
 
@@ -112,6 +114,7 @@ def add(result):
     else:
         record = NoteRecord(result[1])
         notes.add_note(record)
+    return 'I add new note'
 
 
 def all(result):
@@ -138,11 +141,11 @@ def find(result):
         res = re.findall(word, notes[i].record)
         if len(res) > 0:
             result.append(f'Note :{notes[i].record}')
-        return '\n'.join(result)
+    return '\n'.join(result)
 
 
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
-commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove}
+commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove, 'find': find}
 
 """Зміст парсера такий: якщо він знаходить в тексті інтпута слово, що є командою, він повертає список у якому йде[команда, текст нотатка,
  список хештегів якщо вони присунті(тобто список в списку)]. якщо комади немає поверне None """
