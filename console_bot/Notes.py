@@ -33,12 +33,14 @@ class Notes(UserDict):
     def edit_note(self, note_key, new_record):
         if note_key in self.data:
             self.data[note_key].record = new_record
+            return 'You edit note'
         else:
             return f'No note found with key "{note_key}"'
 
     def remove_note(self, note_key):
         if note_key in self.data:
             del self.data[note_key]
+            return f'You remove note'
         else:
             return f'No note found with key "{note_key}"'
 
@@ -75,14 +77,7 @@ class Notes(UserDict):
         return sorted_notes
 
 
-
-
-
 notes = Notes.open_from_file()
-
-
-
-
 
 
 def add(result):
@@ -93,11 +88,14 @@ def add(result):
     else:
         record = NoteRecord(result[1])
         notes.add_note(record)
+    return 'You add note'
 
 
 def all(result):
+    result = ''
     for k, v in notes.items():
-        print(f'Theme:{k},\n {v.record}')
+        result += f'Theme:{k},\n {v.record}\n\n'
+    return result if result else 'There are no notes'
 
 
 def change(result):
@@ -116,13 +114,16 @@ def remove(result):
 
 def find(result):
     word = result[1]
-    result = []
-    for i in notes:
-        res = re.findall(word, notes[i].record)
-        if len(res) > 0:
-            result.append(f'Note :{notes[i].record}')
+    if word:
+        result = []
+        for i in notes:
+            res = re.findall(word, notes[i].record)
+            if len(res) > 0:
+                result.append(f'Note :{notes[i].record}')
+        if not result:
+            return 'There are no notes like this'
         return '\n'.join(result)
-
+    return f"Enter the keyword you want to search"
 
 def search(result):
     tag = result[1]
