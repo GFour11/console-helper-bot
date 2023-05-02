@@ -1,16 +1,18 @@
 import console_bot.ab_work as ab
 from console_bot.handlers import no_command, instruction
-import console_bot.notes as notes
+import console_bot.Notes as notes
 import console_bot.sort as sort
 
-
 MAIN_INSTRUCTION = 'instruction for menu.txt'
+
 
 def help(*args, **kwargs):
     return instruction(MAIN_INSTRUCTION)
 
+
 def good_bye(*args, **kwargs):
     return 'Good bye'
+
 
 MAIN_COMMANDS = {
     'help': help,
@@ -21,6 +23,7 @@ MAIN_COMMANDS = {
 }
 
 MAIN_COMMANDS_WORDS = '|'.join(MAIN_COMMANDS)
+
 
 def main():
     print(help())
@@ -33,10 +36,11 @@ def main():
             print(output)
         if output == 'Good bye':
             break
-    
+
+
 if __name__ == '__main__':
     main()
-    
+
 
 
 
