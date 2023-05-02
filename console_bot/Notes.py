@@ -81,7 +81,9 @@ notes = Notes.open_from_file()
 
 
 def add(result):
-    if len(result) == 3:
+    if len(result) == 1:
+        return "Print your note"
+    elif len(result) == 3:
         hashtags = result[2]
         record = NoteRecord(result[1], hashtags)
         notes.add_note(record)

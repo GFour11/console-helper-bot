@@ -15,36 +15,25 @@ extensions={'Зображення':['jpeg', 'png', 'jpg', 'svg'],
            "Архіви":['zip', 'gz', 'tar'],
            "Невідомі розширення":[]}
 
-def make_translitarate_table() -> dict:
-    '''Make translitarate table from cyrillic to latin'''
-    CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
-    TRANSLATION = (
-        "a", "b", "v", "g", "d", "e", "e", "j", "z", 
-        "i", "j", "k", "l", "m", "n", "o", "p", "r", 
-        "s", "t", "u","f", "h", "ts", "ch", "sh", "sch", 
-        "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g"
-        )
-    TRANS = {}
-
-    for c, l in zip(CYRILLIC_SYMBOLS, TRANSLATION):
-        TRANS[ord(c)] = l
-        TRANS[ord(c.upper())] = l.upper()
-    return TRANS
-
-TRANS = make_translitarate_table()
-
-def normalize(word: str, TRANS = TRANS) -> str:
-    '''
-    Сhecks if the string contains non-Latin letters or non-digits.
-    Replace each character in the string using the given translitaration table.
-    Then replace all characters in the string by _, exept latin and didgits. 
-    '''
-    if re.fullmatch('\w+', word, re.A):
-        return word
-
-    name_translitarate = word.translate(TRANS)
-    normalized_word = re.sub(r'\W', '_', name_translitarate) 
-    return normalized_word
+def normalize(word):
+    result_name=''
+    dicti ={'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g', 'Д': 'D', 'д': 'd',
+ 'Е': 'E', 'е': 'e', 'Ё': 'E', 'ё': 'e', 'Ж': 'J', 'ж': 'j', 'З': 'Z', 'з': 'z', 'И': 'I', 'и': 'i', 'Й': 'J', 'й': 'j', 'К': 'K', 'к': 'k', 'Л': 'L',
+ 'л': 'l', 'М': 'M', 'м': 'm', 'Н': 'N', 'н': 'n', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p', 'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T',
+ 'т': 't', 'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'TS', 'ц': 'c', 'Ч': 'CH', 'ч': 'ch', 'Ш': 'SH', 'ш': 'sh',
+ 'Щ': 'SCH', 'щ': 'sch', 'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '', 'Э': 'E', 'э': 'e', 'Ю': 'YU',
+ 'ю': 'yu', 'Я': 'YA', 'я': 'ya', 'Є': 'JE', 'є': 'je', 'І': 'I', 'і': 'i', 'Ї': 'JI', 'ї': 'ji', 'Ґ': 'G', 'ґ': 'g'}
+    for i in word:
+        if i not in dicti.values():
+            if i in dicti.keys():
+                result_name+=dicti[i]
+            elif '0'<=i<='9':
+                result_name+=i
+            else:
+                result_name+='_'
+        else:
+            result_name+=i
+    return result_name
 
 def create_dirs(path):
         path = Path(path)
@@ -116,19 +105,7 @@ def folder_remover(path):
             if len(os.listdir(i))==0:
                 os.rmdir(i)
 
-def annotation_file(path):
-    message='Result of sorting:\n'
-    for i in os.listdir(path):
-        name = i.split('\\')[-1]
-        message+=f'{name}:\n'
-        for k in os.listdir(f'{path}\\{i}'):
-                file_name = k.split('\\')[-1]
-                message += f'--{file_name}\n'
-    with open (f'{path}\\annotation.txt', 'w') as file:
-        file.write(message)
-    return message
 
-@input_error       
 def organize_files(path):
     if not path:
         raise ValueError('You should write path')
@@ -138,9 +115,8 @@ def organize_files(path):
         sort_files(get_file_paths(path), path)      
         full_sort(path)                               
         dearchivator(path)                       
-        folder_remover(path)                                  
-        message = annotation_file(path)                           
-        return message
+        folder_remover(path)
+        return "Done"
     else:
         raise ValueError("Not correct path")
 

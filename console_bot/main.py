@@ -1,6 +1,6 @@
 import console_bot.ab_work as ab
 from console_bot.handlers import no_command, instruction
-import console_bot.notes as notes
+import console_bot.Notes as notes
 import console_bot.sort as sort
 
 
