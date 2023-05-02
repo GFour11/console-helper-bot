@@ -147,9 +147,6 @@ def sort(*args):
 def help(*args):
     return instruction(NOTES_INSTRUCTION)
 
-
-
-"""Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
 commands_dict ={'add': add, 
                 'all': all, 
                 'change': change, 
@@ -159,8 +156,6 @@ commands_dict ={'add': add,
                 'sort': sort,
                 'help': help}
 
-"""Зміст парсера такий: якщо він знаходить в тексті інтпута слово, що є командою, він повертає список у якому йде[команда, текст нотатка,
- список хештегів якщо вони присунті(тобто список в списку)]. якщо комади немає поверне None """
 def message_parser(text):
     command=None
     note = None
