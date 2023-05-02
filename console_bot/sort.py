@@ -27,7 +27,7 @@ def normalize(word):
              'Щ': 'SCH', 'щ': 'sch', 'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '', 'Э': 'E', 'э': 'e',
              'Ю': 'YU',
              'ю': 'yu', 'Я': 'YA', 'я': 'ya', 'Є': 'JE', 'є': 'je', 'І': 'I', 'і': 'i', 'Ї': 'JI', 'ї': 'ji', 'Ґ': 'G',
-             'ґ': 'g'}
+             'ґ': 'g', '_': 'W', '__': 'w'}
     for i in word:
         if i not in dicti.values():
             if i in dicti.keys():

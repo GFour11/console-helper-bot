@@ -162,3 +162,5 @@ cython_debug/
 .idea/misc.xml
 *.json
 data.bin
+*.bin
+data.bin
