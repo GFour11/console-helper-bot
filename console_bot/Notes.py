@@ -7,6 +7,7 @@ from console_bot.handlers import instruction
 
 NOTES_INSTRUCTION = 'instruction for notes.txt'
 
+
 class HashTags:
     def __init__(self, hashtags):
         self.value = hashtags
@@ -22,6 +23,7 @@ class NoteRecord:
 
 
 class Notes(UserDict):
+
     def add_note(self, note_record: NoteRecord):
         theme = note_record.record.split(' ')
         key = []
@@ -81,7 +83,7 @@ notes = Notes.open_from_file()
 
 
 def add(result):
-    if len(result) == 1:
+    if (result[1]) == None:
         return "Print your note"
     elif len(result) == 3:
         hashtags = result[2]
@@ -101,17 +103,23 @@ def all(result):
 
 
 def change(result):
-    theme = result[1].split(' ')
-    key = theme[0]
-    note = " ".join(theme[1:])
-    message = notes.edit_note(key, note)
-    return message
+    if (result[1]) == None:
+        return "Need information "
+    else:
+        theme = result[1].split(' ')
+        key = theme[0]
+        note = " ".join(theme[1:])
+        message = notes.edit_note(key, note)
+        return message
 
 
 def remove(result):
-    key = result[1]
-    message = notes.remove_note(key)
-    return message
+    if (result[1]) == None:
+        return "Need information "
+    else:
+        key = result[1]
+        message = notes.remove_note(key)
+        return message
 
 
 def find(result):
@@ -134,7 +142,7 @@ def search(result):
         if len(result) == 0:
             return f"No matches"
         return "\n".join(result)
-    return f"Enter the keyword or tag you want to search"
+    return f"Enter the tag you want to search"
 
 
 def sort(*args):
@@ -210,5 +218,10 @@ def main():
         else:
             print("can't see a command")
 
+
+
+
 if __name__ == '__main__':
     main()
+
+
