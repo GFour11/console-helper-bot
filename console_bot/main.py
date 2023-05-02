@@ -22,6 +22,7 @@ MAIN_COMMANDS = {
     'exit': good_bye
 }
 
+
 MAIN_COMMANDS_WORDS = '|'.join(MAIN_COMMANDS)
 
 
