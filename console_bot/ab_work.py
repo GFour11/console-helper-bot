@@ -40,7 +40,6 @@ def main():
     while True:
         inp = input('Write your command: ')
         command, data  = parser(inp, COMMAND_WORDS)
-        print(data)
         handler = OPERATIONS.get(command, handlers.no_command)
         output = handler(data)
         print(output)
