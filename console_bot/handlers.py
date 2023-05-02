@@ -2,7 +2,15 @@ from datetime import datetime
 import re
 from pathlib import Path
 
-from console_bot.classes import Phone, Name, Birthday, Record, AdressBook, Email, Address
+from console_bot.classes import Phone, Name, Birthday, Record, AdressBook, Email, Address, Field
+
+AB_INSTRUCTION = 'instruction for Address Book.txt'
+NAME_CLASSES = {
+    'phone': Phone,
+    'email': Email,
+    'address': Address,
+    'birthday': Birthday
+}
 
 address_book = AdressBook.load_data()
 iterator = iter(address_book)
@@ -20,12 +28,19 @@ def input_error(func):
             output = 'There no birthday date in this contact'
         except StopIteration:
             output = 'There are no more contacts'
+        except IndexError:
+            output = 'You give to few parametrs'
         return output
     return inner
 
+def instruction(path):
+    with open(path, 'r') as file:
+        result = file.read()
+    return result
+
 def hello(*args, **kwargs) -> str:
     '''Return bots greeting'''
-    output = 'How can I help you?'
+    output = instruction(AB_INSTRUCTION)
     return output
 
 @input_error
@@ -33,18 +48,13 @@ def adding(data: str, *args, **kwargs) -> str:
     '''If contact is existing add phone to it, else create contact'''
 
     def parse_data(data: str, element: str):
-        name_classes = {
-            'phone': Phone,
-            'email': Email,
-            'address': Address,
-            'birthday': Birthday
-        }
-        key_words = '|'.join(name_classes) + '|$'
-        match = re.search(rf'\b({element}\:.+)(?=\b({key_words})\b)', data, re.IGNORECASE)
+
+        key_words = '|'.join(NAME_CLASSES)
+        match = re.search(rf'({element}.*?)(?=\b({key_words})\b|$)', data, re.IGNORECASE)
         if match:
             full = match.group(1)
             data = data.replace(full, '').strip()
-            class_ = name_classes.get(element)
+            class_ = NAME_CLASSES.get(element)
             value = class_(full.split(':')[1].strip())
             return data, value
         return data, None
@@ -58,11 +68,11 @@ def adding(data: str, *args, **kwargs) -> str:
 
     if record:
         if birthday:
-            record.birthday = birthday
+            record.add_data('birthday', birthday)
         if address:
-            record.address = address
+            record.add_data('address', address)
         if email:
-            record.email = email
+            record.add_data('email', email)
         if phone:
             record.add_phone(phone)
         output = f'To contact {name} add new data'
@@ -73,16 +83,29 @@ def adding(data: str, *args, **kwargs) -> str:
     return output
 
 @input_error
-def changing(data: str, *args, **kwargs) -> str:
+def changing_phone(data: str, *args, **kwargs) -> str:
     '''Change contact in the dictionary'''
     words = data.split()
     name = ' '.join(words[:-2])
     record = address_book.data[name]
     new_phone = Phone(words[-1])
     old_phone = Phone(words[-2])
-    record.change(old_phone, new_phone)
+    record.change_phone(old_phone, new_phone)
     output = f'Contact {name} is changed from {old_phone} to {new_phone}'
     return output
+
+@input_error
+def changing(data: str, *args, **kwargs) -> str:
+    words = data.split()
+    element = words[0]
+    class__ = NAME_CLASSES.get(element, Field)
+    name = words[1]
+    new_value = ' '.join(words[2::])
+    new_data = class__(new_value)
+    record: Record = address_book[name]
+    record.change_data(element, new_data)
+    return f'In contact {name} {element} is changed to {new_value}'
+
 
 @input_error
 def get_phones(name: str, *args, **kwargs) -> str:
@@ -164,4 +187,4 @@ def no_command(*args, **kwargs) -> str:
     return output
 
 if __name__ == '__main__':
-    print(address_book)
+    pass

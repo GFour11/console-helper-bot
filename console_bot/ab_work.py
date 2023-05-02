@@ -6,6 +6,7 @@ import console_bot.handlers as handlers
 OPERATIONS = {
     'hello': handlers.hello,
     'add': handlers.adding,
+    'change phone': handlers.changing_phone,
     'change': handlers.changing,
     'phone': handlers.get_phones,
     'show all': handlers.show_all,
@@ -19,11 +20,6 @@ OPERATIONS = {
     'no command': handlers.no_command,
     'main menu': handlers.main_menu,
     'return': handlers.main_menu,
-
-    # 'close': handlers.good_bye,
-    # 'good bye': handlers.good_bye,
-    # 'exit':handlers.good_bye, 
-
 }
 
 COMMAND_WORDS = '|'.join(OPERATIONS)
@@ -34,7 +30,7 @@ def parser(message: str, commands: str) -> tuple[str|None, str|None, str|None]:
     command_match = re.search(fr'^({commands})\b', message, re.IGNORECASE)
     if command_match:
         command = command_match.group(1)
-        data = re.sub(command, '', message).strip()
+        data = re.sub(rf'{command}\b', '', message, 1).strip()
         command = command.strip().lower()
         return command, data
     return 'no command', ''
@@ -52,6 +48,6 @@ def main():
             break
     pass 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
 

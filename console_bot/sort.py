@@ -1,9 +1,11 @@
+import re
 import os
 import shutil
 
 import console_bot.ab_work as ab
-from console_bot.handlers import no_command, input_error
+from console_bot.handlers import no_command, input_error, instruction
 
+SORT_INSTRUCTION = 'instruction for sorter.txt'
 
 extensions={'Зображення':['jpeg', 'png', 'jpg', 'svg'],
            "Відео":['avi', 'mp4', 'mov', 'mkv'],
@@ -132,7 +134,7 @@ def organize_files(path):
         raise ValueError("Not correct path")
 
 def start(*args, **kwargs):
-    return 'Here you can sort files'
+    return instruction(SORT_INSTRUCTION)
 
 def no_command(*args, **kwargs):
     return 'There are no command like this'

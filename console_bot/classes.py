@@ -180,6 +180,25 @@ class Record():
             return func(self, *args, **kwargs)
 
         return inner
+    
+    def add_data(self, element, new_data):
+        
+            try:
+                parametr = getattr(self, element)
+            except AttributeError:
+                raise ValueError(f'There are no field {element} in record')
+
+            if parametr:
+                raise ValueError(f'This contact already has {element} data')
+            setattr(self, element, new_data)
+
+    def change_data(self, element, new_data):
+            try:
+                getattr(self, element)
+            except AttributeError:
+                raise ValueError(f'There are no field {element} in record')
+            setattr(self, element, new_data)
+
 
     @raise_empty_number
     @raise_same_number
@@ -199,7 +218,7 @@ class Record():
     @raise_empty_number
     @raise_nonumber
     @raise_same_number
-    def change(self, old_phone: Phone, new_phone: Phone) -> list[Phone]:
+    def change_phone(self, old_phone: Phone, new_phone: Phone) -> list[Phone]:
         '''Change phone number'''
         for phone in filter(lambda phone: phone == old_phone, self.phones):
             phone.value = new_phone.value
@@ -292,3 +311,7 @@ class AdressBook(UserDict):
         else:
             address_book = AdressBook()
         return address_book
+    
+    if __name__ == '__main__':
+        a = Record(Name('SDASD'))
+        a.change_data('sdfs', 'dsf')

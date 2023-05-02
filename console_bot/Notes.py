@@ -3,6 +3,9 @@ import re
 import pickle
 import os
 
+from console_bot.handlers import instruction
+
+NOTES_INSTRUCTION = 'instruction for notes.txt'
 
 class HashTags:
     def __init__(self, hashtags):
@@ -138,9 +141,20 @@ def sort(*args):
         result += f"{tag} : {', '.join(names)} \n"
     return result
 
+def help(*args):
+    return instruction(NOTES_INSTRUCTION)
+
+
 
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
-commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove, 'find': find, 'search': search, 'sort': sort}
+commands_dict ={'add': add, 
+                'all': all, 
+                'change': change, 
+                'remove': remove, 
+                'find': find, 
+                'search': search, 
+                'sort': sort,
+                'help': help}
 
 """Зміст парсера такий: якщо він знаходить в тексті інтпута слово, що є командою, він повертає список у якому йде[команда, текст нотатка,
  список хештегів якщо вони присунті(тобто список в списку)]. якщо комади немає поверне None """
@@ -179,11 +193,12 @@ def message_parser(text):
 
 
 def main():
+    print(help())
     while True:
         text = input('>>>')
-        if text == 'exit':
+        if text == 'return':
             notes.save_in_file()
-            print('bye')
+            print('return')
             break
         res = message_parser(text)
         if res:
