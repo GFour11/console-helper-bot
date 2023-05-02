@@ -1,5 +1,4 @@
-from collections import UserDict
-from main import instruction
+from collections import UserDict, defaultdict
 import re
 import pickle
 import os
@@ -9,18 +8,20 @@ class HashTags:
     def __init__(self, hashtags):
         self.value = hashtags
 
+
 class NoteRecord:
     def __init__(self, record, hashtags: HashTags = None):
         self.record = record
         if hashtags:
             self.hashtags = hashtags
         else:
-            self.hashtags = None
+            self.hashtags = []
+
 
 class Notes(UserDict):
     def add_note(self, note_record: NoteRecord):
         theme = note_record.record.split(' ')
-        key =[]
+        key = []
         for i in range(1):
             key.append(theme[i])
         self.data[' '.join(key)] = note_record
@@ -29,14 +30,12 @@ class Notes(UserDict):
     def edit_note(self, note_key, new_record):
         if note_key in self.data:
             self.data[note_key].record = new_record
-            return f'Note changed'
         else:
             return f'No note found with key "{note_key}"'
 
     def remove_note(self, note_key):
         if note_key in self.data:
             del self.data[note_key]
-            return f'Note deleted'
         else:
             return f'No note found with key "{note_key}"'
 
@@ -48,7 +47,6 @@ class Notes(UserDict):
             with open('notes.bin', 'wb') as fh:
                 pickle.dump(self, fh)
 
-
     @staticmethod
     def open_from_file():
         if os.path.isfile('notes.bin'):
@@ -56,45 +54,22 @@ class Notes(UserDict):
                 return pickle.load(fh)
         else:
             return Notes()
-# '''Функція search_by_tag приймає на вхід тег (ключове слово) і повертає список усіх нотаток, які містять цей тег. 
-# Вона шукає по всіх нотатках, перевіряючи наявність тега в атрибуті hashtags.'''
-# Юрец
-    def search_by_tag(self, tag):
-        result = []
-        for k, v in self.items():
-            if v.hashtags and tag in v.hashtags.value:
-                result.append((k, v.record))
-        return result
 
-    def sort_by_tag(self, tag):
-        result = []
-        for k, v in self.items():
-            if v.hashtags and tag in v.hashtags.value:
-                result.append((k, v.record))
-        return sorted(result, key=lambda x: x[1])
-def search(result):
-    if len(result) == 2:
-        tag = result[1]
-        notes_list = notes.search_by_tag(tag)
-        if notes_list:
-            for note in notes_list:
-                print(f'Theme: {note[0]},\n{note[1]}')
-        else:
-            print(f'No notes found with tag "{tag}"')
-    elif len(result) == 3 and result[2] == '--sort':
-        tag = result[1]
-        sorted_notes = notes.sort_by_tag(tag)
-        if sorted_notes:
-            for note in sorted_notes:
-                print(f'Theme: {note[0]},\n{note[1]}')
-        else:
-            print(f'No notes found with tag "{tag}"')
-    else:
-        print('Invalid arguments for search command')
-# Юрец
-        
-        
+    def search_by_tag(self, key):
+        matching_notes = []
+        for name, note in self.data.items():
+            if key in note.hashtags:
+                matching_notes.append(f"{name} : {note.record}")
+        return matching_notes
 
+    def sort_by_tag(self):
+        sorted_notes = defaultdict(list)
+        for name, note in self.data.items():
+            if not note.hashtags:
+                sorted_notes["without hashtags"].append(name)
+            for tag in note.hashtags:
+                sorted_notes[tag].append(name)
+        return sorted_notes
 
 
 
@@ -110,12 +85,11 @@ notes = Notes.open_from_file()
 def add(result):
     if len(result) == 3:
         hashtags = result[2]
-        record = NoteRecord(result[1],hashtags)
+        record = NoteRecord(result[1], hashtags)
         notes.add_note(record)
     else:
         record = NoteRecord(result[1])
         notes.add_note(record)
-    return 'I add new note'
 
 
 def all(result):
@@ -130,23 +104,43 @@ def change(result):
     message = notes.edit_note(key, note)
     return message
 
+
 def remove(result):
     key = result[1]
     message = notes.remove_note(key)
     return message
 
+
 def find(result):
-    word= result[1]
-    result= []
+    word = result[1]
+    result = []
     for i in notes:
         res = re.findall(word, notes[i].record)
         if len(res) > 0:
             result.append(f'Note :{notes[i].record}')
-    return '\n'.join(result)
+        return '\n'.join(result)
+
+
+def search(result):
+    tag = result[1]
+    if tag:
+        result = notes.search_by_tag(tag)
+        if len(result) == 0:
+            return f"No matches"
+        return "\n".join(result)
+    return f"Enter the keyword or tag you want to search"
+
+
+def sort(*args):
+    sorted = notes.sort_by_tag()
+    result = ""
+    for tag, names in sorted.items():
+        result += f"{tag} : {', '.join(names)} \n"
+    return result
 
 
 """Сюди записуйте як ви хочете щоб команда викликалась( яким словом) і через : назву функції """
-commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove, 'find': find}
+commands_dict ={'add': add, 'all': all, 'change': change, 'remove': remove, 'find': find, 'search': search, 'sort': sort}
 
 """Зміст парсера такий: якщо він знаходить в тексті інтпута слово, що є командою, він повертає список у якому йде[команда, текст нотатка,
  список хештегів якщо вони присунті(тобто список в списку)]. якщо комади немає поверне None """
@@ -185,7 +179,6 @@ def message_parser(text):
 
 
 def main():
-    print(instruction('instruction for notes.txt'))
     while True:
         text = input('>>>')
         if text == 'exit':
@@ -199,5 +192,6 @@ def main():
         else:
             print("can't see a command")
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
+
