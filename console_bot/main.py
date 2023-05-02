@@ -1,6 +1,6 @@
 import console_bot.ab_work as ab
 from console_bot.handlers import no_command, instruction
-import console_bot.notes as notes
+import console_bot.Notes as Notes
 import console_bot.sort as sort
 
 MAIN_INSTRUCTION = 'instruction for menu.txt'
@@ -17,7 +17,7 @@ def good_bye(*args, **kwargs):
 MAIN_COMMANDS = {
     'help': help,
     'address book': ab.main,
-    'notes': notes.main,
+    'notes': Notes.main,
     'sort': sort.main,
     'exit': good_bye
 }
