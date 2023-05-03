@@ -4,7 +4,7 @@ import console_bot.handlers as handlers
 
 
 OPERATIONS = {
-    'hello': handlers.hello,
+    'help': handlers.hello,
     'add': handlers.adding,
     'change phone': handlers.changing_phone,
     'change': handlers.changing,

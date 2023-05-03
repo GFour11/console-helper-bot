@@ -157,7 +157,7 @@ def help(*args):
     return instruction(NOTES_INSTRUCTION)
 
 commands_dict ={'add': add, 
-                'all': all, 
+                'show all': all,
                 'change': change, 
                 'remove': remove, 
                 'find': find, 
@@ -202,7 +202,7 @@ def message_parser(text):
 def main():
     print(help())
     while True:
-        text = input('>>>')
+        text = input('Write your command: ')
         if text == 'return':
             notes.save_in_file()
             print('return')
