@@ -157,7 +157,7 @@ def help(*args):
     return instruction(NOTES_INSTRUCTION)
 
 commands_dict ={'add': add, 
-                'show all': all,
+                'show all': all, 
                 'change': change, 
                 'remove': remove, 
                 'find': find, 
@@ -212,7 +212,7 @@ def main():
             if res[0] in commands_dict:
                 print(commands_dict[res[0]](res))
         else:
-            print("can't see a command")
+            print("There no command")
 
 
 

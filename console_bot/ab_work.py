@@ -36,7 +36,7 @@ def parser(message: str, commands: str) -> tuple[str|None, str|None, str|None]:
     return 'no command', ''
 
 def main():
-    print(handlers.hello())
+    print(handlers.help())
     while True:
         inp = input('Write your command: ')
         command, data  = parser(inp, COMMAND_WORDS)
