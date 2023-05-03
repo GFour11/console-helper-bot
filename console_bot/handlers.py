@@ -1,6 +1,4 @@
-from datetime import datetime
 import re
-from pathlib import Path
 
 from console_bot.classes import Phone, Name, Birthday, Record, AdressBook, Email, Address, Field
 
@@ -38,7 +36,7 @@ def instruction(path):
         result = file.read()
     return result
 
-def hello(*args, **kwargs) -> str:
+def help(*args, **kwargs) -> str:
     '''Return bots greeting'''
     output = instruction(AB_INSTRUCTION)
     return output
