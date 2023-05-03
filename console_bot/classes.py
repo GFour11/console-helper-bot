@@ -253,7 +253,7 @@ class AdressBook(UserDict):
         if not self.data:
             return 'There are no contacts in list'
         output = reduce(lambda s, t: str(s) + '\n' + str(t),
-                        self.data.values(), 'Yor contacts:')
+                        self.data.values(), 'Your contacts:')
         return output
 
     def find_records(self, symbols: str) -> str:
