@@ -5,4 +5,4 @@ Open terminal and type the following commands:
 or it could be
 -> python setup.py install
 then run it up by command
--> contact-bot
+-> console-bot
