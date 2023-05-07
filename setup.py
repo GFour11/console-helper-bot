@@ -8,6 +8,7 @@ setup(
     author='Dmytro Babenko',
     author_email='dmytro.babenko87@gmail.com',
     license='MIT',
+    include_package_data=True,
     packages=find_namespace_packages(),
     entry_points={'console_scripts': ['console-bot = console_bot.main:main']}
 )
