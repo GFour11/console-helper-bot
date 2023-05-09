@@ -15,9 +15,9 @@ class Abstract(ABC):
     @abstractmethod
     def show_notes(self):
         pass
-    # @abstractmethod
-    # def help(self):
-    #     pass
+    @abstractmethod
+    def help(self):
+        pass
 
 
 class Main(Abstract):
@@ -25,8 +25,10 @@ class Main(Abstract):
         return show_all()
     def show_notes(self):
         return Notes.all([])
-    # def help(self):
-    #     return instruction(MAIN_INSTRUCTION)
+    def help(self):
+        with open('instruction for menu.txt', 'r') as file:
+            return file.read()
+
 
 
 
@@ -36,12 +38,9 @@ def good_bye(*args, **kwargs):
 
 main = Main()
 
-def help(*args, **kwargs):
-    with open('instruction for menu.txt', 'r') as file:
-        return file.read()
 
 MAIN_COMMANDS = {
-    'help': help,
+    'help': main.help,
     "show contacts": main.show_contacts,
     'show notes': main.show_notes,
     'address book': ab.main,
@@ -54,7 +53,7 @@ MAIN_COMMANDS = {
 MAIN_COMMANDS_WORDS = '|'.join(MAIN_COMMANDS)
 
 def main():
-    print(help())
+    print(main.help())
     while True:
         user_input = input('Choose points: address book, notes, sort\n'
                            'Or show contacts, or show notes\n '
