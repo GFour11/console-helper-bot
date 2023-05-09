@@ -37,7 +37,7 @@ def good_bye(*args, **kwargs):
 main = Main()
 
 def help(*args, **kwargs):
-    with open('instruction for menu.txt' 'r') as file:
+    with open('instruction for menu.txt', 'r') as file:
         return file.read()
 
 MAIN_COMMANDS = {
