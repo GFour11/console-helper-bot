@@ -154,7 +154,7 @@ def sort(*args):
 
 
 def help(*args):
-    return instruction(NOTES_INSTRUCTION)
+    return 'its Notes'
 
 commands_dict ={'add': add, 
                 'show all': all, 

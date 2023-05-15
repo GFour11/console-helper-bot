@@ -26,8 +26,12 @@ class Main(Abstract):
     def show_notes(self):
         return Notes.all([])
     def help(self):
-        with open('instruction for menu.txt', 'r') as file:
-            return file.read()
+        print("Hello,hello,hello!\n"
+              "This bot created by boys from team 6!\n"
+              "This bot can replace your phone if you are crazy!Pick 'Address Book' for create your address book.\n"
+              "'Sort' - for sort your files.Or 'Notes' for write shopping list or memoirs!\n"
+              "Lets go!\n"
+              "* for end print 'Exit'")
 
 
 
@@ -36,13 +40,13 @@ class Main(Abstract):
 def good_bye(*args, **kwargs):
     return 'Good bye'
 
-main = Main()
+first = Main()
 
 
 MAIN_COMMANDS = {
-    'help': main.help,
-    "show contacts": main.show_contacts,
-    'show notes': main.show_notes,
+    'help': first.help,
+    "show contacts": first.show_contacts,
+    'show notes': first.show_notes,
     'address book': ab.main,
     'notes': Notes.main,
     'sort': sort.main,
@@ -53,7 +57,7 @@ MAIN_COMMANDS = {
 MAIN_COMMANDS_WORDS = '|'.join(MAIN_COMMANDS)
 
 def main():
-    print(main.help())
+    print(first.help())
     while True:
         user_input = input('Choose points: address book, notes, sort\n'
                            'Or show contacts, or show notes\n '

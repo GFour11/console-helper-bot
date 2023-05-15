@@ -134,7 +134,7 @@ def organize_files(path):
 
 
 def start(*args, **kwargs):
-    return instruction(SORT_INSTRUCTION)
+    return 'Its sorter'
 
 
 def no_command(*args, **kwargs):

@@ -38,7 +38,7 @@ def instruction(path):
 
 def help(*args, **kwargs) -> str:
     '''Return bots greeting'''
-    output = instruction(AB_INSTRUCTION)
+    output = 'its Address Book'
     return output
 
 @input_error
